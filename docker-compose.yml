@@ -1,21 +1,23 @@
-# Lumen with a real PostgreSQL: db + FastAPI RAG service + nginx serving the React UI.
+# AI-Based RAG Application with a real PostgreSQL: db + FastAPI RAG service + nginx serving the React UI.
 #   docker compose up --build
 #   UI  http://localhost:5174      API http://localhost:8002/api/health  (reports database: postgresql)
 # Optional: put OPENAI_API_KEY in a .env file next to this compose file to enable LLM mode.
 # Change host ports with WEB_PORT / API_PORT / DB_PORT.
+name: ai-based-rag-application
+
 services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: lumen
-      POSTGRES_PASSWORD: lumen
-      POSTGRES_DB: lumen
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      - lumen-pgdata:/var/lib/postgresql/data
+      - rag-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lumen -d lumen"]
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -24,7 +26,7 @@ services:
   api:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql://lumen:lumen@db:5432/lumen
+      DATABASE_URL: postgresql://rag:rag@db:5432/rag
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
     ports:
@@ -43,4 +45,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  lumen-pgdata:
+  rag-pgdata:

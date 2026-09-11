@@ -46,7 +46,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = BACKEND_ROOT / "data"
 # Optional override for the SQLite file (used by the test suite and handy for
 # running several isolated libraries side by side).
-SQLITE_PATH = Path(_clean("SQLITE_PATH")) if _clean("SQLITE_PATH") else DATA_DIR / "lumen.db"
+SQLITE_PATH = Path(_clean("SQLITE_PATH")) if _clean("SQLITE_PATH") else DATA_DIR / "rag.db"
 
 
 def database_kind() -> str:

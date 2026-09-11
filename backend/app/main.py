@@ -1,4 +1,4 @@
-"""Lumen API — ingest, search, and grounded answers."""
+"""AI-Based RAG Application — API for ingest, search, and grounded answers."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from app.seed import seed_if_empty
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
-app = FastAPI(title="Lumen", version="1.0.0")
+app = FastAPI(title="AI-Based RAG Application", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -75,7 +75,7 @@ def health(db: Session = Depends(get_db)) -> dict:
     documents = db.query(Document).count()
     return {
         "ok": True,
-        "service": "lumen",
+        "service": "ai-based-rag-application",
         "mode": generation_mode(),
         "embedding": embedding_backend(),
         "database": database_kind(),

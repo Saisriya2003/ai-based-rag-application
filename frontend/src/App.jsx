@@ -29,7 +29,7 @@ export default function App() {
 
   useEffect(() => {
     refresh().catch((error) => {
-      setBootError(error.message || "Could not reach the Lumen API.");
+      setBootError(error.message || "Could not reach the RAG API.");
     });
   }, [refresh]);
 
@@ -130,7 +130,7 @@ export default function App() {
             <div className="mark-ring" />
           </div>
           <div>
-            <div className="wordmark">Lumen</div>
+            <div className="wordmark">AI-Based RAG Application</div>
             <p className="subtitle">Ask your documents. Grounded answers.</p>
           </div>
         </div>

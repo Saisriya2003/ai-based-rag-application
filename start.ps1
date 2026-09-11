@@ -1,4 +1,4 @@
-# Lumen - one-command start for Windows PowerShell.
+# AI-Based RAG Application - one-command start for Windows PowerShell.
 # Installs dependencies on first run, then opens the API (8002) and UI (5174) in two windows.
 
 $root = $PSScriptRoot
@@ -24,4 +24,4 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$fr
 
 Start-Sleep -Seconds 4
 Start-Process "http://localhost:5174"
-Write-Host "Lumen: API http://127.0.0.1:8002  UI http://localhost:5174"
+Write-Host "AI-Based RAG Application: API http://127.0.0.1:8002  UI http://localhost:5174"

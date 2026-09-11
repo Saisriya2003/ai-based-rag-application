@@ -1,14 +1,14 @@
-# Lumen
+# AI-Based RAG Application
 
 Ask your documents. Grounded answers.
 
-Lumen is a retrieval-augmented generation (RAG) workspace: it indexes your files, retrieves the closest passages, and answers only from that context. Built for Pettem Sai Sriya as a production-style demo of an AI document Q&A system.
+This is a retrieval-augmented generation (RAG) workspace: it indexes your files, retrieves the closest passages, and answers only from that context. Built for Pettem Sai Sriya as a production-style demo of an AI document Q&A system.
 
 The first run needs no API keys, no Docker, and no Postgres. Three seed documents are loaded automatically so chat works immediately.
 
 Full documentation — architecture, RAG pipeline in depth, data model, API, UI workflow, modes, configuration, CI: **[DOCUMENTATION.md](DOCUMENTATION.md)**.
 
-[![CI](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-c9844a.svg)](LICENSE) [![Tests: pytest](https://img.shields.io/badge/tests-pytest%20%C2%B7%2019-7eb8a2.svg)](backend/tests) [![Docker Compose: PostgreSQL](https://img.shields.io/badge/docker-compose%20%C2%B7%20PostgreSQL-0c0a08.svg)](docker-compose.yml)
+[![CI](https://github.com/Saisriya2003/ai-based-rag-application/actions/workflows/ci.yml/badge.svg)](https://github.com/Saisriya2003/ai-based-rag-application/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-c9844a.svg)](LICENSE) [![Tests: pytest](https://img.shields.io/badge/tests-pytest%20%C2%B7%2019-7eb8a2.svg)](backend/tests) [![Docker Compose: PostgreSQL](https://img.shields.io/badge/docker-compose%20%C2%B7%20PostgreSQL-0c0a08.svg)](docker-compose.yml)
 
 ## Screenshots
 
@@ -21,8 +21,8 @@ Full documentation — architecture, RAG pipeline in depth, data model, API, UI 
 **Requirements:** [Python 3.11+](https://www.python.org/downloads/) and [Node.js 18+](https://nodejs.org/) on your PATH. No API keys, no Postgres, no Docker — SQLite and three seed documents are created on first boot.
 
 ```bash
-git clone https://github.com/Saisriya2003/docuqa-rag.git
-cd docuqa-rag
+git clone https://github.com/Saisriya2003/ai-based-rag-application.git
+cd ai-based-rag-application
 ```
 
 Then run the one-command starter for your OS. It installs dependencies on first run, starts the API on `http://127.0.0.1:8002` and the UI on `http://localhost:5174`, and opens the browser.
@@ -45,7 +45,7 @@ Manual steps are under **How to run on Windows** below (the same commands work o
 - **`python` not found** — on macOS/Linux use `python3`; on Windows install from python.org and tick "Add to PATH".
 - **`psycopg2` fails to install** — only needed for PostgreSQL. Remove that line from `backend/requirements.txt` if you are staying on SQLite.
 - **Port 8002 or 5174 already in use** — change the port in `start.ps1` / `start.sh` and `frontend/vite.config.js` together.
-- **"Could not reach the Lumen API"** — the backend is not up yet. Check `http://127.0.0.1:8002/api/health`.
+- **"Could not reach the RAG API"** — the backend is not up yet. Check `http://127.0.0.1:8002/api/health`.
 
 | | |
 | --- | --- |
@@ -91,8 +91,8 @@ Question ──► embed ──► cosine top-k ──────────�
 
 `backend/app/db.py` picks the engine from the environment.
 
-- **SQLite (default)** — if `DATABASE_URL` is unset, Lumen writes `backend/data/lumen.db`. Zero setup.
-- **PostgreSQL** — set `DATABASE_URL` (for example `postgresql://lumen:lumen@localhost:5432/lumen`). The schema stays the same: `documents` and `chunks`.
+- **SQLite (default)** — if `DATABASE_URL` is unset, the API writes `backend/data/rag.db`. Zero setup.
+- **PostgreSQL** — set `DATABASE_URL` (for example `postgresql://rag:rag@localhost:5432/rag`). The schema stays the same: `documents` and `chunks`.
 
 Embeddings are stored as JSON text so both backends stay interchangeable. After you switch embedding backends, re-upload (or delete all documents and restart) so vectors share one space.
 
@@ -101,7 +101,7 @@ Embeddings are stored as JSON text so both backends stay interchangeable. After 
 | Mode | When | Behavior |
 | --- | --- | --- |
 | **Extractive mode** | No `OPENAI_API_KEY` | Best sentences from the top chunks, stitched into an answer. Sources listed. The UI never pretends this is a chat model. |
-| **LLM mode** | `OPENAI_API_KEY` is set | OpenAI chat completion with retrieved context and citation markers. If the API call fails, Lumen falls back to extractive. |
+| **LLM mode** | `OPENAI_API_KEY` is set | OpenAI chat completion with retrieved context and citation markers. If the API call fails, the app falls back to extractive. |
 
 The status pill in the header reads the `/api/health` `mode` field.
 
@@ -117,7 +117,7 @@ Use two terminals. Python 3.12 and Node 18+ are expected.
 ### 1. API
 
 ```bat
-cd C:\Users\saisr\sriya-projects\docuqa-rag\backend
+cd C:\Users\saisr\sriya-projects\ai-based-rag-application\backend
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
@@ -129,7 +129,7 @@ Health check: [http://127.0.0.1:8002/api/health](http://127.0.0.1:8002/api/healt
 ### 2. UI
 
 ```bat
-cd C:\Users\saisr\sriya-projects\docuqa-rag\frontend
+cd C:\Users\saisr\sriya-projects\ai-based-rag-application\frontend
 npm install
 npm run dev
 ```
@@ -166,7 +166,7 @@ Serve `frontend/dist` behind a proxy that forwards `/api` to Uvicorn, or set `VI
 
 ## Seed library
 
-On first boot (empty `documents` table) Lumen indexes:
+On first boot (empty `documents` table) the app indexes:
 
 - **Aether Desk — Product Spec** — launch date, non-goals, stack
 - **Helios Labs — Time Away Policy** — PTO, sick leave, parental leave

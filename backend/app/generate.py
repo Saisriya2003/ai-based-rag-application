@@ -153,7 +153,7 @@ def _llm_answer(question: str, passages: list[dict]) -> str:
             {
                 "role": "system",
                 "content": (
-                    "You are Lumen, a retrieval-augmented assistant. Answer only from "
+                    "You are a retrieval-augmented assistant. Answer only from "
                     "the numbered sources. Cite them inline like [1]. If the sources "
                     "do not contain the answer, say so clearly. Do not invent facts."
                 ),

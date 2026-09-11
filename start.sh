@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lumen - one-command start for macOS / Linux.
+# AI-Based RAG Application - one-command start for macOS / Linux.
 # Installs dependencies on first run, then runs the API (8002) and UI (5174).
 # Press Ctrl+C to stop both.
 set -euo pipefail
@@ -30,5 +30,5 @@ sleep 4
 URL="http://localhost:5174"
 if command -v xdg-open >/dev/null; then xdg-open "$URL" >/dev/null 2>&1 || true
 elif command -v open >/dev/null; then open "$URL" || true; fi
-echo "Lumen: API http://127.0.0.1:8002  UI $URL"
+echo "AI-Based RAG Application: API http://127.0.0.1:8002  UI $URL"
 wait

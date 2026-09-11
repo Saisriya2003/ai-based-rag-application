@@ -45,7 +45,7 @@ function Message({ item }) {
   if (item.pending) {
     return (
       <article className="bubble assistant" aria-live="polite">
-        <div className="who">Lumen</div>
+        <div className="who">Assistant</div>
         <div className="bubble-body">
           <div className="typing" aria-label="Thinking">
             <i />
@@ -59,7 +59,7 @@ function Message({ item }) {
 
   return (
     <article className="bubble assistant">
-      <div className="who">{item.kind === "search" ? "Passages" : "Lumen"}</div>
+      <div className="who">{item.kind === "search" ? "Passages" : "Assistant"}</div>
       <div className="bubble-body">
         {item.text ? <p>{item.text}</p> : null}
         {item.kind === "search" && item.passages?.length
@@ -137,7 +137,7 @@ export default function Chat({
           <div className="hero-empty">
             <h2>Ask your documents. Grounded answers.</h2>
             <p>
-              Lumen retrieves the most relevant passages from your library, then answers
+              The app retrieves the most relevant passages from your library, then answers
               only from those passages — so every claim can be traced to a source.
             </p>
             <div className="suggestions">

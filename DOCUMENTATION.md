@@ -1,8 +1,8 @@
-# Lumen — Complete Documentation
+# AI-Based RAG Application — Complete Documentation
 
 **AI-based Retrieval-Augmented Generation (RAG) application for document question answering**
 
-Repository: https://github.com/Saisriya2003/docuqa-rag
+Repository: https://github.com/Saisriya2003/ai-based-rag-application
 Author: Pettem Sai Sriya · saisriyavarma@gmail.com
 
 Resume project: *AI-Based RAG Application — Built a Retrieval-Augmented Generation system for answering questions from documents. Implemented document ingestion, embeddings, and semantic search. Integrated LLM for accurate and context-aware responses. Tech: Python, FastAPI, React, PostgreSQL.*
@@ -31,7 +31,7 @@ Resume project: *AI-Based RAG Application — Built a Retrieval-Augmented Genera
 
 ## 1. Overview
 
-Lumen answers questions **only from the documents you give it**. A user uploads PDFs, Markdown, or plain text; Lumen extracts the text, splits it into overlapping chunks, embeds each chunk, and stores everything in a relational database. When a question arrives, it embeds the question, ranks chunks by cosine similarity, and produces an answer grounded in the top passages, with citations pointing back to document and chunk.
+The application answers questions **only from the documents you give it**. A user uploads PDFs, Markdown, or plain text; it extracts the text, splits it into overlapping chunks, embeds each chunk, and stores everything in a relational database. When a question arrives, it embeds the question, ranks chunks by cosine similarity, and produces an answer grounded in the top passages, with citations pointing back to document and chunk.
 
 Design goals:
 
@@ -48,7 +48,7 @@ Design goals:
 | Web framework | FastAPI | 0.115.6 |
 | ASGI server | Uvicorn | 0.34.0 |
 | ORM | SQLAlchemy 2.0 (typed `Mapped` models) | 2.0.36 |
-| Database (default) | SQLite (`backend/data/lumen.db`) | built-in |
+| Database (default) | SQLite (`backend/data/rag.db`) | built-in |
 | Database (optional) | PostgreSQL via `psycopg2-binary` | 2.9.10 |
 | PDF extraction | pypdf | 5.1.0 |
 | Vector maths | NumPy | 2.2.1 |
@@ -66,7 +66,7 @@ Design goals:
 ## 3. Repository layout
 
 ```
-docuqa-rag/
+ai-based-rag-application/
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py
@@ -78,7 +78,7 @@ docuqa-rag/
 │   │   ├── generate.py    extractive_answer, _llm_answer, answer_question with fallback
 │   │   ├── seed.py        three seed documents inserted when the library is empty
 │   │   └── main.py        FastAPI app, CORS, endpoints, startup seeding
-│   ├── data/lumen.db      SQLite database (created on first start; ignored by git except seed state)
+│   ├── data/rag.db      SQLite database (created on first start; ignored by git except seed state)
 │   └── requirements.txt
 ├── frontend/
 │   ├── index.html
@@ -142,7 +142,7 @@ Limits: 10 MB per upload (`MAX_UPLOAD_BYTES`).
 
 Why it works for the demo: shared vocabulary and sub-word overlap between a question and its answer produce a high cosine similarity, it is deterministic, needs no model download, and embeds thousands of chunks per second. It has no semantic understanding of synonyms — see §14.
 
-**Optional: sentence-transformers.** With `SENTENCE_TRANSFORMERS=1` and the package installed, `all-MiniLM-L6-v2` produces 384-d normalised embeddings. Because dimensions differ, re-index (delete `lumen.db` or the documents) after switching.
+**Optional: sentence-transformers.** With `SENTENCE_TRANSFORMERS=1` and the package installed, `all-MiniLM-L6-v2` produces 384-d normalised embeddings. Because dimensions differ, re-index (delete `rag.db` or the documents) after switching.
 
 ### 5.3 Retrieval (`retrieve.py`)
 
@@ -191,7 +191,7 @@ Relationship: `Document.chunks` with `cascade="all, delete-orphan"`; deleting a 
 
 ### 6.2 Engine selection
 
-`DATABASE_URL` set → PostgreSQL (`postgres://` is rewritten to `postgresql://` for SQLAlchemy). Otherwise SQLite at `backend/data/lumen.db` with `check_same_thread=False`. `pool_pre_ping=True` on both. `init_db()` runs `create_all` at startup; no migration tool is needed for the two-table schema.
+`DATABASE_URL` set → PostgreSQL (`postgres://` is rewritten to `postgresql://` for SQLAlchemy). Otherwise SQLite at `backend/data/rag.db` with `check_same_thread=False`. `pool_pre_ping=True` on both. `init_db()` runs `create_all` at startup; no migration tool is needed for the two-table schema.
 
 ## 7. Seed library
 
@@ -211,7 +211,7 @@ Base URL (dev): `http://127.0.0.1:8002`. Swagger UI at `/docs`.
 
 | Method | Path | Request | Response |
 | --- | --- | --- | --- |
-| GET | `/api/health` | — | `{ok, service: "lumen", mode: "extractive"|"llm", embedding: "hashing"|"sentence-transformers", database: "sqlite"|"postgresql", documents}` |
+| GET | `/api/health` | — | `{ok, service: "ai-based-rag-application", mode: "extractive"|"llm", embedding: "hashing"|"sentence-transformers", database: "sqlite"|"postgresql", documents}` |
 | GET | `/api/documents` | — | `{documents: [{id, name, mime, bytes_len, created_at, chunk_count}]}` newest first |
 | POST | `/api/documents/upload` | multipart `file` (pdf/md/txt, ≤ 10 MB) | `{document: {...}}` · 400 on unsupported/empty · 413 over limit |
 | DELETE | `/api/documents/{id}` | — | `{ok: true, id}` · 404 if missing |
@@ -258,14 +258,14 @@ Python 3.11+, Node.js 18+, Git.
 ### One command
 
 ```powershell
-git clone https://github.com/Saisriya2003/docuqa-rag.git
-cd docuqa-rag
+git clone https://github.com/Saisriya2003/ai-based-rag-application.git
+cd ai-based-rag-application
 .\start.ps1     # Windows (or: powershell -ExecutionPolicy Bypass -File .\start.ps1)
 ```
 
 ```bash
-git clone https://github.com/Saisriya2003/docuqa-rag.git
-cd docuqa-rag
+git clone https://github.com/Saisriya2003/ai-based-rag-application.git
+cd ai-based-rag-application
 ./start.sh      # macOS / Linux
 ```
 
@@ -286,7 +286,7 @@ npm run dev     # http://localhost:5174
 
 ### Docker (with PostgreSQL)
 
-`docker compose up --build` starts three containers: `db` (`postgres:16-alpine`, user/db `lumen`, `pg_isready` healthcheck, persistent volume), `api` (`backend/Dockerfile`, `DATABASE_URL=postgresql://lumen:lumen@db:5432/lumen`, waits for the healthy database, seeds on first boot), and `web` (multi-stage Node build → `nginx:alpine`, `/api/` proxied to `api:8002`, `client_max_body_size 12m` for uploads). `/api/health` then reports `"database": "postgresql"`. Host ports default to 5174/8002/5432 (`WEB_PORT`/`API_PORT`/`DB_PORT`); an `.env` beside the compose file can supply `OPENAI_API_KEY`.
+`docker compose up --build` starts three containers: `db` (`postgres:16-alpine`, user/db `rag`, `pg_isready` healthcheck, persistent volume), `api` (`backend/Dockerfile`, `DATABASE_URL=postgresql://rag:rag@db:5432/rag`, waits for the healthy database, seeds on first boot), and `web` (multi-stage Node build → `nginx:alpine`, `/api/` proxied to `api:8002`, `client_max_body_size 12m` for uploads). `/api/health` then reports `"database": "postgresql"`. Host ports default to 5174/8002/5432 (`WEB_PORT`/`API_PORT`/`DB_PORT`); an `.env` beside the compose file can supply `OPENAI_API_KEY`.
 
 ### Production build
 
@@ -298,8 +298,8 @@ Copy `.env.example` to `.env` in the repo root or `backend/` (both are searched;
 
 | Variable | Default | Effect |
 | --- | --- | --- |
-| `DATABASE_URL` | empty → SQLite | e.g. `postgresql://user:pass@localhost:5432/lumen` |
-| `SQLITE_PATH` | `backend/data/lumen.db` | Alternate SQLite file (ignored when `DATABASE_URL` is set); used by the tests |
+| `DATABASE_URL` | empty → SQLite | e.g. `postgresql://user:pass@localhost:5432/rag` |
+| `SQLITE_PATH` | `backend/data/rag.db` | Alternate SQLite file (ignored when `DATABASE_URL` is set); used by the tests |
 | `OPENAI_API_KEY` | empty → extractive | Enables LLM generation |
 | `OPENAI_MODEL` | `gpt-4o-mini` | Chat model name |
 | `SENTENCE_TRANSFORMERS` | unset → hashing | `1/true/yes` → MiniLM embeddings (`pip install sentence-transformers`) |
