@@ -107,16 +107,20 @@ def extractive_answer(question: str, passages: list[dict]) -> str:
             ranked.append((score, passage.get("document_id") or 0, passage["chunk_index"], sentence))
 
     ranked.sort(key=lambda row: row[0], reverse=True)
-    chosen: list[tuple[int, int, str]] = []
+    best_score = ranked[0][0] if ranked else 0.0
+    # Supporting sentences must be reasonably close to the best match, so a
+    # distractor that merely shares a word does not pad the answer.
+    floor = max(0.12, best_score * 0.5)
+    chosen: list[tuple[float, int, int, str]] = []
     seen: set[str] = set()
     for score, doc_id, index, sentence in ranked:
         key = sentence.lower()
         if key in seen:
             continue
-        if score < 0.12 and chosen:
+        if chosen and score < floor:
             continue
         seen.add(key)
-        chosen.append((doc_id, index, sentence))
+        chosen.append((score, doc_id, index, sentence))
         if len(chosen) >= 4:
             break
 
@@ -127,8 +131,13 @@ def extractive_answer(question: str, passages: list[dict]) -> str:
             quote = quote[:417].rstrip() + "…"
         return f"Closest passage from {best['doc']}:\n\n“{quote}”"
 
-    chosen.sort(key=lambda row: (row[0], row[1]))
-    body = " ".join(sentence for _, _, sentence in chosen)
+    # Lead with the best-matching document, then keep reading order inside each
+    # document. `chosen` is in score order, so first appearance = best document.
+    doc_rank: dict[int, int] = {}
+    for _, doc_id, _, _ in chosen:
+        doc_rank.setdefault(doc_id, len(doc_rank))
+    chosen.sort(key=lambda row: (doc_rank[row[1]], row[2]))
+    body = " ".join(sentence for _, _, _, sentence in chosen)
     return body
 
 

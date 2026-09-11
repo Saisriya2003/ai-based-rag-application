@@ -8,7 +8,13 @@ The first run needs no API keys, no Docker, and no Postgres. Three seed document
 
 Full documentation — architecture, RAG pipeline in depth, data model, API, UI workflow, modes, configuration, CI: **[DOCUMENTATION.md](DOCUMENTATION.md)**.
 
-[![CI](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml)
+[![CI](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-c9844a.svg)](LICENSE) [![Tests: pytest](https://img.shields.io/badge/tests-pytest%20%C2%B7%2019-7eb8a2.svg)](backend/tests) [![Docker Compose: PostgreSQL](https://img.shields.io/badge/docker-compose%20%C2%B7%20PostgreSQL-0c0a08.svg)](docker-compose.yml)
+
+## Screenshots
+
+| Ask — grounded answer with citations and retrieved passages | Passages — raw semantic search over the library |
+| --- | --- |
+| ![Ask mode: question, answer with citation chips, expanded snippet, retrieved passages with scores](docs/screenshots/ask.png) | ![Passages mode: ranked chunks with cosine scores for a query](docs/screenshots/passages.png) |
 
 ## Quick start
 
@@ -171,3 +177,28 @@ Try: *How many PTO days do Helios employees receive?*
 ## Stack
 
 Python 3.12, FastAPI, Uvicorn, SQLAlchemy, pypdf, NumPy, React 18, Vite, PostgreSQL or SQLite.
+
+## Run with Docker
+
+Three containers: **PostgreSQL 16**, the FastAPI RAG service pointed at it via `DATABASE_URL`, and nginx serving the built React UI with `/api` proxied. This is the production shape from the resume line (Python, FastAPI, React, PostgreSQL) — `/api/health` reports `"database": "postgresql"`.
+
+```bash
+docker compose up --build
+# UI  http://localhost:5174        API  http://localhost:8002/api/health
+```
+
+Put `OPENAI_API_KEY=...` in a `.env` file beside `docker-compose.yml` to enable LLM mode inside the container. Change host ports with `WEB_PORT` / `API_PORT` / `DB_PORT`. Stop with `docker compose down` (add `-v` to drop the Postgres volume).
+
+## Tests
+
+`backend/tests` — 19 pytest tests on an **isolated SQLite file** (the real library is never touched): boundary-aware chunking with overlap and full coverage, deterministic unit-length hashed embeddings, extractive answer ranking (numeric sentences for *how many*, best document first, weak distractors dropped), and the full API: seeding, ask with citations, ranked search, upload → ask → delete, and validation errors (unsupported, empty, oversized files).
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE). Seed documents are fictional.

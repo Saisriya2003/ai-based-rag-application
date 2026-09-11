@@ -32,7 +32,7 @@ def _engine_url() -> str:
         if url.startswith("postgres://"):
             url = "postgresql://" + url[len("postgres://") :]
         return url
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
     return f"sqlite:///{SQLITE_PATH.as_posix()}"
 
 

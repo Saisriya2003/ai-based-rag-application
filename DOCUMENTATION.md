@@ -158,7 +158,7 @@ Why it works for the demo: shared vocabulary and sub-word overlap between a ques
 1. Split each passage into sentences (regex on `.!?` followed by whitespace); drop fragments shorter than 28 characters and short colon-terminated headers.
 2. Build the question term set (stop-words removed).
 3. Score each sentence: `0.5 × chunk_score + 0.35 × overlap_count + 0.15 × overlap_density`; +0.18 if the question asks *how many / how much / when / who* and the sentence contains a digit.
-4. Keep up to four unique sentences (a second sentence must score ≥ 0.12), order them by document and chunk, join into the answer.
+4. Keep up to four unique sentences; supporting sentences must score at least `max(0.12, 0.5 × best)` so a distractor sharing one word is dropped. Order them with the best-matching document first, then by chunk (reading order) within each document, and join into the answer.
 5. If nothing qualifies, quote the best passage verbatim (≤ 420 chars).
 
 **LLM mode (`OPENAI_API_KEY` set).**
@@ -284,6 +284,10 @@ npm install
 npm run dev     # http://localhost:5174
 ```
 
+### Docker (with PostgreSQL)
+
+`docker compose up --build` starts three containers: `db` (`postgres:16-alpine`, user/db `lumen`, `pg_isready` healthcheck, persistent volume), `api` (`backend/Dockerfile`, `DATABASE_URL=postgresql://lumen:lumen@db:5432/lumen`, waits for the healthy database, seeds on first boot), and `web` (multi-stage Node build → `nginx:alpine`, `/api/` proxied to `api:8002`, `client_max_body_size 12m` for uploads). `/api/health` then reports `"database": "postgresql"`. Host ports default to 5174/8002/5432 (`WEB_PORT`/`API_PORT`/`DB_PORT`); an `.env` beside the compose file can supply `OPENAI_API_KEY`.
+
 ### Production build
 
 `npm run build` in `frontend/` → `dist/`. Serve statically with `/api` proxied to Uvicorn, or build with `VITE_API_URL` and add the origin to CORS in `main.py`.
@@ -295,6 +299,7 @@ Copy `.env.example` to `.env` in the repo root or `backend/` (both are searched;
 | Variable | Default | Effect |
 | --- | --- | --- |
 | `DATABASE_URL` | empty → SQLite | e.g. `postgresql://user:pass@localhost:5432/lumen` |
+| `SQLITE_PATH` | `backend/data/lumen.db` | Alternate SQLite file (ignored when `DATABASE_URL` is set); used by the tests |
 | `OPENAI_API_KEY` | empty → extractive | Enables LLM generation |
 | `OPENAI_MODEL` | `gpt-4o-mini` | Chat model name |
 | `SENTENCE_TRANSFORMERS` | unset → hashing | `1/true/yes` → MiniLM embeddings (`pip install sentence-transformers`) |
@@ -311,9 +316,18 @@ Mode matrix reported by `/api/health`:
 
 ## 12. Testing, CI, and verification
 
+### Automated tests (`backend/tests`, pytest)
+
+19 tests, run with `pip install -r requirements-dev.txt && python -m pytest` from `backend/`. `conftest.py` sets `SQLITE_PATH` to a temp file and blanks `DATABASE_URL`/`OPENAI_API_KEY` before any app import, so the suite never touches the real library, a developer's Postgres, or OpenAI.
+
+- `test_ingest.py` — MIME resolution by extension; Markdown softening; single-chunk and empty inputs; on a 6,000-character document every chunk is ≤ 500 chars, is a verbatim slice starting on a word, overlaps its neighbour by at most overlap + word snap, and the tail is covered.
+- `test_embed.py` — hashed embeddings are deterministic, 256-d and unit length; a question is closer to its answer passage than to an unrelated one; empty and mismatched vectors are safe.
+- `test_generate.py` — numeric sentence wins for *how many*; the best-matching document leads the answer; weak distractors are dropped; empty passages message; `answer_question` reports mode and citations.
+- `test_api.py` — health modes and seed count; document list; grounded ask with citations; ranked search; validation errors; upload → ask → delete round-trip with chunk cleanup; unsupported, empty, and > 10 MB uploads rejected.
+
 ### GitHub Actions (`.github/workflows/ci.yml`)
 
-- **backend**: Python 3.12 → `pip install -r requirements.txt` → start Uvicorn on 8002 → `GET /api/health` (triggers seeding, asserts `documents ≥ 3`) → `POST /api/ask` with a seed question → assert 200 and non-empty answer.
+- **backend**: Python 3.12 → `pip install -r requirements-dev.txt` → `pytest` → start Uvicorn on 8002 → `GET /api/health` (triggers seeding, asserts `documents ≥ 3`) → `POST /api/ask` with a seed question → assert 200 and non-empty answer.
 - **frontend**: Node 20 → `npm ci` → `npm run build`.
 
 ### End-to-end verification performed

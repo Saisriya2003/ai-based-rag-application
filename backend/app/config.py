@@ -44,7 +44,9 @@ SENTENCE_TRANSFORMERS = _clean("SENTENCE_TRANSFORMERS") in {"1", "true", "True",
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = BACKEND_ROOT / "data"
-SQLITE_PATH = DATA_DIR / "lumen.db"
+# Optional override for the SQLite file (used by the test suite and handy for
+# running several isolated libraries side by side).
+SQLITE_PATH = Path(_clean("SQLITE_PATH")) if _clean("SQLITE_PATH") else DATA_DIR / "lumen.db"
 
 
 def database_kind() -> str:
