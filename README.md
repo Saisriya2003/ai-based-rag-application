@@ -6,6 +6,8 @@ Lumen is a retrieval-augmented generation (RAG) workspace: it indexes your files
 
 The first run needs no API keys, no Docker, and no Postgres. Three seed documents are loaded automatically so chat works immediately.
 
+Full documentation — architecture, RAG pipeline in depth, data model, API, UI workflow, modes, configuration, CI: **[DOCUMENTATION.md](DOCUMENTATION.md)**.
+
 [![CI](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml)
 
 ## Quick start
