@@ -1,0 +1,35 @@
+# Environment
+.env
+.env.local
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# App data
+backend/data/*.db
+backend/data/*.db-journal
+*.sqlite
+*.sqlite3
+
+# Node
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-error.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
