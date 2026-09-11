@@ -6,6 +6,30 @@ Lumen is a retrieval-augmented generation (RAG) workspace: it indexes your files
 
 The first run needs no API keys, no Docker, and no Postgres. Three seed documents are loaded automatically so chat works immediately.
 
+## Quick start (Windows)
+
+Needs Python 3.12 and Node 18+.
+
+```powershell
+.\start.ps1
+```
+
+Installs dependencies on first run, starts the API on `http://127.0.0.1:8002` and the UI on `http://localhost:5174`, and opens the browser. Manual steps are under **How to run on Windows** below.
+
+| | |
+| --- | --- |
+| Stack | Python, FastAPI, SQLAlchemy, React, Vite |
+| Database | SQLite by default; PostgreSQL via `DATABASE_URL` |
+| Pipeline | Ingest (PDF/MD/TXT) → chunk → embed → cosine retrieval → answer with citations |
+| Generation | Extractive offline; OpenAI when `OPENAI_API_KEY` is set |
+
+## What this demonstrates
+
+- Document ingestion, chunking, and an embedding pipeline
+- Semantic search over stored chunks
+- Context-aware answers with source citations back to the document
+- One schema that runs on SQLite locally and PostgreSQL in production
+
 ## Architecture
 
 ```
@@ -96,7 +120,7 @@ cd frontend
 npm run build
 ```
 
-Serve `frontend/dist` behind a proxy that forwards `/api` to Uvicorn, or set `VITE_API_URL=http://127.0.0.1:8000` before building.
+Serve `frontend/dist` behind a proxy that forwards `/api` to Uvicorn, or set `VITE_API_URL=http://127.0.0.1:8002` before building.
 
 ## API
 
