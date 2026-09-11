@@ -6,15 +6,38 @@ Lumen is a retrieval-augmented generation (RAG) workspace: it indexes your files
 
 The first run needs no API keys, no Docker, and no Postgres. Three seed documents are loaded automatically so chat works immediately.
 
-## Quick start (Windows)
+[![CI](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/Saisriya2003/docuqa-rag/actions/workflows/ci.yml)
 
-Needs Python 3.12 and Node 18+.
+## Quick start
 
-```powershell
-.\start.ps1
+**Requirements:** [Python 3.11+](https://www.python.org/downloads/) and [Node.js 18+](https://nodejs.org/) on your PATH. No API keys, no Postgres, no Docker — SQLite and three seed documents are created on first boot.
+
+```bash
+git clone https://github.com/Saisriya2003/docuqa-rag.git
+cd docuqa-rag
 ```
 
-Installs dependencies on first run, starts the API on `http://127.0.0.1:8002` and the UI on `http://localhost:5174`, and opens the browser. Manual steps are under **How to run on Windows** below.
+Then run the one-command starter for your OS. It installs dependencies on first run, starts the API on `http://127.0.0.1:8002` and the UI on `http://localhost:5174`, and opens the browser.
+
+| OS | Command |
+| --- | --- |
+| Windows (PowerShell) | `.\start.ps1` |
+| macOS / Linux | `chmod +x start.sh && ./start.sh` |
+
+If PowerShell refuses to run the script ("running scripts is disabled"), use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1
+```
+
+Manual steps are under **How to run on Windows** below (the same commands work on macOS/Linux with `python3` and `source .venv/bin/activate`). CI runs the install, an API smoke test, and the production build on every push.
+
+### Troubleshooting
+
+- **`python` not found** — on macOS/Linux use `python3`; on Windows install from python.org and tick "Add to PATH".
+- **`psycopg2` fails to install** — only needed for PostgreSQL. Remove that line from `backend/requirements.txt` if you are staying on SQLite.
+- **Port 8002 or 5174 already in use** — change the port in `start.ps1` / `start.sh` and `frontend/vite.config.js` together.
+- **"Could not reach the Lumen API"** — the backend is not up yet. Check `http://127.0.0.1:8002/api/health`.
 
 | | |
 | --- | --- |
